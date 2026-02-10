@@ -76,19 +76,21 @@ WSGI_APPLICATION = 'ghenny_soft_immo.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-import dj_database_url
 import os
+import dj_database_url
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv()  # OK en local, ignoré sur Render
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
+    "default": dj_database_url.parse(
+        os.environ.get("DATABASE_URL"),
         conn_max_age=600,
-        ssl_require=True  # pour la sécurité
+        ssl_require=True,
     )
 }
+
+
 
 
 # BASE_DIR = Path(__file__).resolve().parent.parent
@@ -185,3 +187,21 @@ SPECTACULAR_SETTINGS = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+
+ALLOWED_HOSTS = [
+    "gs-immo-backend.onrender.com",
+    "127.0.0.1",
+    "localhost",
+]
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://gs-immo-backend.onrender.com",
+]
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
