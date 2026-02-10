@@ -76,21 +76,36 @@ WSGI_APPLICATION = 'ghenny_soft_immo.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+import dj_database_url
+import os
+from dotenv import load_dotenv
 
-# Charger .env
 load_dotenv()
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('dbname'),
-        'USER': os.getenv('user'),
-        'PASSWORD': os.getenv('password'),
-        'HOST': os.getenv('host'),
-        'PORT': os.getenv('port', '5432'),
-    }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True  # pour la sécurité
+    )
 }
+
+
+# BASE_DIR = Path(__file__).resolve().parent.parent
+
+# # Charger .env
+# load_dotenv()
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('dbname'),
+#         'USER': os.getenv('user'),
+#         'PASSWORD': os.getenv('password'),
+#         'HOST': os.getenv('host'),
+#         'PORT': os.getenv('port', '5432'),
+#     }
+# }
 
 
 
