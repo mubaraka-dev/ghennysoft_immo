@@ -92,15 +92,7 @@ DATABASES = {
     }
 }
 
-import psycopg2
 
-conn = psycopg2.connect(
-    user="postgres",
-    password="ton_password",
-    host="db.pgaugfkmkuspozyjwitz.supabase.co",
-    port="5432",
-    dbname="postgres"
-)
 
 # DATABASES = {
 #     'default': {
