@@ -7,6 +7,7 @@ class UserChoice(models.TextChoices):
     ACCOUNTANT = 'ACCOUNTANT', 'Comptable'
     CONCIERGE = 'CONCIERGE', 'Concierge'
     TENANT = 'TENANT', 'Locataire'
+    
 
 class User(AbstractUser):
     

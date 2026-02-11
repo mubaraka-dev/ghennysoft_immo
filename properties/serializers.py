@@ -10,7 +10,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
 
 class GallerySerializer(serializers.ModelSerializer):
     apartments = ApartmentSerializer(many=True, read_only=True)
-    total_apartments = serializers.IntegerField(source='apartments.count', read_only=True)
+    total_apartments = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Gallery
