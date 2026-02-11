@@ -192,6 +192,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 ALLOWED_HOSTS = [
     "gs-immo-backend.onrender.com",
+    "ghennysoft-immo.onrender.com",
     "127.0.0.1",
     "localhost",
 ]
