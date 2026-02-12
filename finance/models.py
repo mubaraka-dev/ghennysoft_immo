@@ -3,7 +3,7 @@ from tenants.models import Contract
 from properties.models import Gallery, Apartment
 
 
-class STATUS_CHOICES(models.TextChoices):
+class RentStatusChoices(models.TextChoices):
     UNPAID = 'UNPAID', 'Non Payé'
     PAID = 'PAID', 'Payé'
     LATE = 'LATE', 'En Retard'
@@ -17,7 +17,7 @@ class Rent(models.Model):
     period_end = models.DateField()
     due_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_CHOICES.UNPAID)
+    status = models.CharField(max_length=20, choices=RentStatusChoices.choices, default=RentStatusChoices.UNPAID)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -57,7 +57,7 @@ class  PROVIDER_CHOICES(models.TextChoices):
     REGIDESO = 'REGIDESO', 'REGIDESO'
     OTHER = 'OTHER', 'Autre'
 
-class STATUS_CHOICES(models.TextChoices):
+class InvoiceStatusChoices(models.TextChoices):
     PENDING = 'PENDING', 'En attente'
     PAID = 'PAID', 'Payé'
 
@@ -70,7 +70,7 @@ class SupplierInvoice(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     issue_date = models.DateField()
     due_date = models.DateField(blank=True, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_CHOICES.PENDING)
+    status = models.CharField(max_length=20, choices=InvoiceStatusChoices.choices, default=InvoiceStatusChoices.PENDING)
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

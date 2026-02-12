@@ -7,8 +7,8 @@ class PaymentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RentSerializer(serializers.ModelSerializer):
-    total_paid = serializers.ReadOnlyField()
-    balance = serializers.ReadOnlyField()
+    total_paid = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    balance = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     tenant_name = serializers.ReadOnlyField(source='contract.tenant.first_name')
     apartment_details = serializers.ReadOnlyField(source='contract.apartment.number')
 

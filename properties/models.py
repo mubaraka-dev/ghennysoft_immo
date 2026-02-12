@@ -1,6 +1,9 @@
 from django.db import models
+from accounts.models import User
 
 class Gallery(models.Model):
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='galleries')
     name = models.CharField(max_length=255)
     address = models.TextField()
     manager_name = models.CharField(max_length=255, blank=True, null=True)
@@ -9,6 +12,9 @@ class Gallery(models.Model):
 
     def __str__(self):
         return self.name
+
+  
+
 
 class STATUS_CHOICES(models.TextChoices):
     FREE = 'FREE', 'Libre'

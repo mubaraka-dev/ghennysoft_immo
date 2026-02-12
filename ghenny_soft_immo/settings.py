@@ -172,6 +172,17 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Documentation de l\'API pour Ghenny Soft Immo',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+
+    'ENUM_NAME_OVERRIDES': {
+        # Pour les appartements (Libre, Occupé, Maintenance)
+        'ApartmentStatusEnum': 'properties.models.STATUS_CHOICES',
+        
+        # Pour les loyers
+        'RentStatusEnum': 'finance.models.RentStatusChoices', 
+        
+        # Pour les factures fournisseurs
+        'InvoiceStatusEnum': 'finance.models.InvoiceStatusChoices',
+    },
 }
 
 CORS_ALLOW_ALL_ORIGINS = True

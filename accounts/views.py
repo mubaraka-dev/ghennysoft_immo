@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from .permissions import IsAdminOrSelf
+
 from .models import UserChoice
 from rest_framework import generics, viewsets ,status,permissions
 from rest_framework.response import Response
@@ -33,19 +33,19 @@ class CreateUserView(generics.CreateAPIView):
 
 @extend_schema_view(
     get=extend_schema(
-        summary="Récupérer le profil",
+        summary="Récupérer mon profil",
         description="Récupère les informations de l'utilisateur actuellement connecté."
     ),
     put=extend_schema(
-        summary="Mettre à jour le profil",
+        summary="Mettre à jour mon profil",
         description="Met à jour les informations de l'utilisateur connecté."
     ),
     patch=extend_schema(
-        summary="Mise à jour partielle du profil",
+        summary="Mise à jour partielle de mon profil",
         description="Met à jour partiellement les informations de l'utilisateur connecté."
     ),
     delete=extend_schema(
-        summary="Supprimer le compte",
+        summary="Supprimer mon compte",
         description="Désactive le compte de l'utilisateur connecté (suppression logique)."
     ),
 )

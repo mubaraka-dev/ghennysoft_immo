@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from .models import UserChoice
+# from ..accounts.models import UserChoice
 
 
 class IsAdminOrSelf(permissions.BasePermission):
@@ -24,3 +24,11 @@ class IsAdminOrSelf(permissions.BasePermission):
 
         # Sinon → seulement son propre compte
         return obj == request.user
+
+class IsOwner(permissions.BasePermission):
+    """
+    Permission personnalisée pour permettre uniquement au propriétaire d'un objet de le modifier ou le voir.
+    """
+    def has_object_permission(self, request, view, obj):
+        # Vérifie si l'utilisateur connecté est le propriétaire de l'objet
+        return obj.owner == request.user
