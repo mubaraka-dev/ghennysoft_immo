@@ -1,12 +1,13 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import GalleryViewSet, ApartmentViewSet, UserGalleryViewSet, UserApartmentViewSet
+from .views import GalleryViewSet, ApartmentViewSet, UserGalleryViewSet, UserApartmentViewSet, GalleryManagerViewSet
 
 router = DefaultRouter()
 router.register(r'galleries', GalleryViewSet)
 router.register(r'my-galleries', UserGalleryViewSet, basename='my-gallery')
 router.register(r'apartments', ApartmentViewSet)
 router.register(r'my-apartments', UserApartmentViewSet, basename='my-apartment')
+router.register(r'gallery-managers', GalleryManagerViewSet, basename='gallery-manager')
 
 urlpatterns = [
     path('', include(router.urls)),

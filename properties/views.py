@@ -1,7 +1,8 @@
 from rest_framework import viewsets, permissions, filters
-from .models import Gallery, Apartment
-from .serializers import GallerySerializer, ApartmentSerializer, UserGallerySerializer, UserApartmentSerializer
+from .models import Gallery, Apartment, GalleryManager
+from .serializers import GallerySerializer, ApartmentSerializer, UserGallerySerializer, UserApartmentSerializer, GalleryManagerSerializer
 from .permissions import IsOwner
+from .permissions_properties import ownerPropertiesPermission
 from django.db.models import Count
 from drf_spectacular.utils import extend_schema, extend_schema_view
  
@@ -100,6 +101,7 @@ class ApartmentViewSet(viewsets.ModelViewSet):
 
 
 #  les donnes de l'utilisateur qui est connecté en session: ses données de galerie et d'appartement
+# proprietaire de ces galery
 
 @extend_schema_view(
     list=extend_schema(
@@ -135,7 +137,7 @@ class UserGalleryViewSet(viewsets.ModelViewSet):
     serializer_class = UserGallerySerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name', 'address', 'manager_name']
+    search_fields = ['name', 'address']
 
     def get_queryset(self):
         # Pour la génération de schéma Swagger (évite l'erreur sur request.user)
@@ -198,3 +200,44 @@ class UserApartmentViewSet(viewsets.ModelViewSet):
             from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied("Vous ne pouvez pas ajouter d'appartement dans une galerie qui ne vous appartient pas.")
         serializer.save()
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="Lister les managers de vos gallery",
+        description="Récupère la liste des assignations de managers pour vos gallery."
+    ),
+    retrieve=extend_schema(
+        summary="Détails d'une assignation",
+        description="Récupère les détails d'une assignation manager-appartement."
+    ),
+    create=extend_schema(
+        summary="Assigner un manager",
+        description="Assigne un manager à un appartement spécifique."
+    ),
+    update=extend_schema(
+        summary="Mettre à jour une assignation",
+        description="Met à jour l'assignation d'un manager."
+    ),
+    partial_update=extend_schema(
+        summary="Mise à jour partielle",
+        description="Met à jour partiellement une assignation."
+    ),
+    destroy=extend_schema(
+        summary="Supprimer une assignation",
+        description="Supprime l'assignation d'un manager à un appartement."
+    ),
+)
+@extend_schema(tags=['Propriétés - Gestionnaires'])
+class GalleryManagerViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet pour gérer les managers assignés aux galeries.
+    Accessible uniquement par le propriétaire des galeries.
+    """
+    serializer_class = GalleryManagerSerializer
+    permission_classes = [ownerPropertiesPermission]
+
+    def get_queryset(self):
+        # Pour la génération de schéma Swagger
+        if getattr(self, 'swagger_fake_view', False):
+            return GalleryManager.objects.none()
+        return GalleryManager.objects.filter(gallery__owner=self.request.user)
