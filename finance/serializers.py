@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Rent, Payment, SupplierInvoice
+from .models import Rent, Payment, SupplierInvoice,Contract
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,3 +23,15 @@ class SupplierInvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupplierInvoice
         fields = '__all__'
+
+
+
+class ContractSerializer(serializers.ModelSerializer):
+    owner_name = serializers.ReadOnlyField(source='owner.first_name')
+    tenant_name = serializers.ReadOnlyField(source='tenant.first_name')
+    apartment_details = serializers.ReadOnlyField(source='apartment.number')
+    
+    class Meta:
+        model = Contract
+        fields = '__all__'
+        read_only_fields = ['owner']

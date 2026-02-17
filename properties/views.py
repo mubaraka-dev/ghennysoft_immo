@@ -9,40 +9,24 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 @extend_schema_view(
     list=extend_schema(
         summary="Lister les galeries",
-        description="Récupère une liste de toutes les galeries. Permet la recherche par nom, adresse et nom du manager."
+        description="Récupère une liste de toutes les galeries. Permet la recherche par nom."
     ),
     retrieve=extend_schema(
         summary="Détails d'une galerie",
         description="Récupère les détails complets d'une galerie spécifique, y compris la liste des appartements associés."
     ),
-    create=extend_schema(
-        summary="Créer une nouvelle galerie",
-        description="Crée un nouvel enregistrement de galerie."
-    ),
-    update=extend_schema(
-        summary="Mettre à jour une galerie",
-        description="Met à jour complètement les informations d'une galerie existante."
-    ),
-    partial_update=extend_schema(
-        summary="Mise à jour partielle d'une galerie",
-        description="Met à jour partiellement les informations d'une galerie existante."
-    ),
-    destroy=extend_schema(
-        summary="Supprimer une galerie",
-        description="Supprime une galerie de la base de données."
-    ),
 )
 @extend_schema(tags=['Propriétés - Galeries'])
-class GalleryViewSet(viewsets.ModelViewSet):
+class GalleryList(viewsets.ReadOnlyModelViewSet):
     """
-    ViewSet pour gérer les opérations CRUD sur les galeries.
-    Fournit des points de terminaison pour lister, créer, récupérer, mettre à jour et supprimer des galeries.
+    ViewSet pour la consultation des galeries.
+    Fournit des points de terminaison pour lister et voir les détails des galeries.
     """
     queryset = Gallery.objects.all()
     serializer_class = GallerySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name', 'address', 'manager_name']
+    search_fields = ['name', 'address']
 
     def get_queryset(self):
         """
@@ -62,32 +46,17 @@ class GalleryViewSet(viewsets.ModelViewSet):
         summary="Détails d'un appartement",
         description="Récupère les détails complets d'un appartement spécifique."
     ),
-    create=extend_schema(
-        summary="Créer un nouvel appartement",
-        description="Crée un nouvel enregistrement d'appartement pour une galerie donnée."
-    ),
-    update=extend_schema(
-        summary="Mettre à jour un appartement",
-        description="Met à jour complètement les informations d'un appartement existant."
-    ),
-    partial_update=extend_schema(
-        summary="Mise à jour partielle d'un appartement",
-        description="Met à jour partiellement les informations d'un appartement existant."
-    ),
-    destroy=extend_schema(
-        summary="Supprimer un appartement",
-        description="Supprime un appartement de la base de données."
-    ),
 )
 @extend_schema(tags=['Propriétés - Appartements'])
-class ApartmentViewSet(viewsets.ModelViewSet):
+class ApartmentList(viewsets.ReadOnlyModelViewSet):
     """
-    ViewSet pour gérer les opérations CRUD sur les appartements.
-    Fournit des points de terminaison pour lister, créer, récupérer, mettre à jour et supprimer des appartements.
+    ViewSet pour la consultation des appartements.
+    Fournit des points de terminaison pour lister et voir les détails des appartements.
+    L'accès est public pour la liste et le détail.
     """
     queryset = Apartment.objects.all()
     serializer_class = ApartmentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['number', 'gallery__name']
     filterset_fields = ['gallery', 'status']

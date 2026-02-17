@@ -1,11 +1,11 @@
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Rent, Payment, SupplierInvoice
-from .serializers import RentSerializer, PaymentSerializer, SupplierInvoiceSerializer
-from django.db.models import Sum
+from .models import Rent, Payment, SupplierInvoice,Contract
+from .serializers import RentSerializer, PaymentSerializer, SupplierInvoiceSerializer,ContractSerializer
+from django.db.models import Sum, Q
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiTypes
-
+from rest_framework.exceptions import MethodNotAllowed
 @extend_schema_view(
     list=extend_schema(
         summary="Lister les loyers",
@@ -189,3 +189,83 @@ class SupplierInvoiceViewSet(viewsets.ModelViewSet):
     filterset_fields = ['provider', 'status', 'gallery']
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary="Lister mes contrats",
+        description="Récupère la liste des contrats où l'utilisateur connecté est soit le propriétaire, soit le locataire."
+    ),
+    retrieve=extend_schema(
+        summary="Détails d'un contrat",
+        description="Récupère les détails d'un contrat spécifique."
+    ),
+    create=extend_schema(
+        summary="Créer un contrat",
+        description="Crée un nouveau contrat. Le propriétaire est automatiquement défini sur l'utilisateur connecté."
+    ),
+    update=extend_schema(
+        summary="Mettre à jour un contrat",
+        description="Met à jour un contrat existant."
+    ),
+    partial_update=extend_schema(
+        summary="Mise à jour partielle d'un contrat",
+        description="Met à jour partiellement un contrat."
+    ),
+    destroy=extend_schema(
+        summary="Supprimer un contrat",
+        description="Supprime un contrat."
+    ),
+)
+@extend_schema(tags=['Finance - Contrats'])
+class ContractViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet pour gérer les contrats.
+    - Le propriétaire (créateur) a tous les droits.
+    - Le locataire a un accès en lecture seule.
+    """
+    queryset = Contract.objects.all()  # Nécessaire pour le router, même si get_queryset est défini
+    serializer_class = ContractSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['tenant__first_name', 'tenant__last_name', 'apartment__number']
+    filterset_fields = ['is_active', 'apartment']
+
+    def get_permissions(self):
+        """Définit les permissions spécifiques : seul le propriétaire peut modifier/supprimer."""
+        if self.action in ['update', 'partial_update', 'destroy']:
+            # On vérifie que l'utilisateur est bien le propriétaire dans has_object_permission plus bas ou via une classe dédiée
+            # Ici, on utilise une logique simple : on surcharge check_object_permissions ou on utilise une classe custom.
+            # Pour faire simple et robuste dans ce fichier, on ajoute une classe de permission dynamique ici :
+            class IsOwnerOrReadOnly(permissions.BasePermission):
+                def has_object_permission(self, request, view, obj):
+                    # Lecture autorisée pour tout le monde (filtré par get_queryset)
+                    if request.method in permissions.SAFE_METHODS:
+                        return True
+                    # Écriture/Suppression uniquement pour le propriétaire
+                    return obj.owner == request.user
+            return [permissions.IsAuthenticated(), IsOwnerOrReadOnly()]
+        return [permissions.IsAuthenticated()]
+
+    def get_queryset(self):
+        """
+        Cette vue retourne une liste de tous les contrats pour l'utilisateur
+        actuellement authentifié, où il est soit le propriétaire (owner),
+        soit le locataire (tenant).
+        """
+        user = self.request.user
+        if getattr(self, 'swagger_fake_view', False):
+            return Contract.objects.none()
+        return Contract.objects.filter(Q(owner=user) | Q(tenant=user))
+
+    def perform_create(self, serializer):
+        """Assigne automatiquement l'utilisateur connecté comme propriétaire du contrat."""
+        serializer.save(owner=self.request.user)
+
+    # empecher les méthodes de suppression et de mise à jour des contrats
+    def destroy(self, request, *args, **kwargs):
+        raise MethodNotAllowed('DELETE')
+
+    def update(self, request, *args, **kwargs):
+        raise MethodNotAllowed('PUT')
+
+    def partial_update(self, request, *args, **kwargs):
+        raise MethodNotAllowed('PATCH')
