@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     # Local apps
     'accounts',
     'properties',
-    'tenants',
     'finance',
 ]
 

@@ -73,7 +73,7 @@ class RentViewSet(viewsets.ModelViewSet):
         # Logic to generate rents for all active contracts for a given month
         # This is a simplified version
         # Expects 'year' and 'month' in data
-        from tenants.models import Contract
+        from .models import Contract
         from datetime import date
         
         year = request.data.get('year')
@@ -275,12 +275,16 @@ class ContractViewSet(viewsets.ModelViewSet):
 
 
 # finance/views.py
-# finance/views.py
+import logging
+
 from django.http import HttpResponse
 from .models import Rent
 
+logger = logging.getLogger(__name__)
+
 def run_rents_cron(request):
     Rent.process_rents()
+    logger.info("Cron run_rents_cron exécuté avec succès")
     return HttpResponse(status=204)
 
 

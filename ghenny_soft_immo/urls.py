@@ -9,7 +9,6 @@ urlpatterns = [
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('api/auth/', include('accounts.urls')),
     path('api/properties/', include('properties.urls')),
-    path('api/tenants/', include('tenants.urls')),
     path('api/finance/', include('finance.urls')),
 
     # OpenAPI schema (JSON)
