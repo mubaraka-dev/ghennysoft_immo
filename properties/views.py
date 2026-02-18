@@ -196,7 +196,7 @@ class UserApartmentViewSet(viewsets.ModelViewSet):
         description="Supprime l'assignation d'un manager à un appartement."
     ),
 )
-@extend_schema(tags=['Propriétés - Gestionnaires'])
+@extend_schema(tags=['Propriétés - Mes Gestionnaires de galleries'])
 class GalleryManagerViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour gérer les managers assignés aux galeries.

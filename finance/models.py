@@ -1,6 +1,10 @@
 from django.db import models
 from properties.models import Gallery, Apartment
 from accounts.models import User
+from django.utils import timezone
+from django.db import transaction
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 
 class Contract(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contractOwner')
@@ -44,6 +48,41 @@ class Rent(models.Model):
     @property
     def balance(self):
         return self.amount - self.total_paid
+    
+    @classmethod
+    def process_rents(cls):
+        today = timezone.now().date()
+
+        rents = cls.objects.select_related("contract").all()
+
+        for rent in rents:
+
+            if not rent.period_end:
+                continue
+
+            if today <= rent.period_end:
+                continue
+
+            with transaction.atomic():
+
+                next_start = rent.period_start + relativedelta(months=1)
+                next_end = next_start + relativedelta(months=1) - timedelta(days=1)
+
+                exists = cls.objects.filter(
+                    contract=rent.contract,
+                    period_start=next_start
+                ).exists()
+
+                if not exists:
+                    cls.objects.create(
+                        contract=rent.contract,
+                        period_start=next_start,
+                        period_end=next_end,
+                        due_date=next_start,
+                        amount=rent.amount,
+                        status=RentStatusChoices.UNPAID
+                    )
+
 
 class METHOD_CHOICES(models.TextChoices):
     CASH = 'CASH', 'Espèces'

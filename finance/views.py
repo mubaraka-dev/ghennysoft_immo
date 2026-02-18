@@ -215,7 +215,7 @@ class SupplierInvoiceViewSet(viewsets.ModelViewSet):
         description="Supprime un contrat."
     ),
 )
-@extend_schema(tags=['Finance - Contrats'])
+@extend_schema(tags=['Finance - Contrats propriétaire/locataire'])
 class ContractViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour gérer les contrats.
@@ -269,3 +269,19 @@ class ContractViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         raise MethodNotAllowed('PATCH')
+
+
+
+
+
+# finance/views.py
+# finance/views.py
+from django.http import HttpResponse
+from .models import Rent
+
+def run_rents_cron(request):
+    Rent.process_rents()
+    return HttpResponse(status=204)
+
+
+
