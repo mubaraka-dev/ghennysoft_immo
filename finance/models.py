@@ -130,16 +130,39 @@ class InvoiceStatusChoices(models.TextChoices):
     PAID = 'PAID', 'Payé'
 
 class SupplierInvoice(models.Model):
+    """
+    Facture fournisseur associée à une `Gallery` ou un `Apartment`.
+    - `gallery`: galerie concernée (optionnelle)
+    - `apartment`: appartement concerné (optionnel)
+    - `provider`: fournisseur (SNEL, REGIDESO, OTHER)
+    - `reference`: numéro/référence de la facture
+    - `amount`: montant total de la facture
+    - `issue_date`: date d'émission de la facture
+    - `due_date`: date d'échéance du paiement (optionnelle)
+    - `status`: statut de la facture (PENDING / PAID)
+    - `description`: informations complémentaires (optionnel)
+    - `created_at`: horodatage de la création de l'enregistrement
+    """
 
+    # Galerie associée (facultative)
     gallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, related_name='invoices', blank=True, null=True)
+    # Appartement associé (facultatif)
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='invoices', blank=True, null=True)
+    # Fournisseur émetteur de la facture
     provider = models.CharField(max_length=50, choices=PROVIDER_CHOICES, default=PROVIDER_CHOICES.OTHER)
+    # Référence unique fournie par le fournisseur
     reference = models.CharField(max_length=100)
+    # Montant total de la facture
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    # Date d'émission
     issue_date = models.DateField()
+    # Date d'échéance (si fournie)
     due_date = models.DateField(blank=True, null=True)
+    # Statut de la facture (en attente ou payée)
     status = models.CharField(max_length=20, choices=InvoiceStatusChoices.choices, default=InvoiceStatusChoices.PENDING)
+    # Description ou notes supplémentaires
     description = models.TextField(blank=True, null=True)
+    # Horodatage de la création de l'enregistrement
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -298,16 +321,30 @@ class InvoiceStatusChoices(models.TextChoices):
     PAID = 'PAID', 'Payé'
 
 class SupplierInvoice(models.Model):
+    """
+    Facture fournisseur associée à une `Gallery` ou un `Apartment`.
+    Voir les commentaires de champ pour plus de détails.
+    """
 
+    # Galerie associée (facultative)
     gallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, related_name='invoices', blank=True, null=True)
+    # Appartement associé (facultatif)
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='invoices', blank=True, null=True)
+    # Fournisseur émetteur de la facture
     provider = models.CharField(max_length=50, choices=PROVIDER_CHOICES, default=PROVIDER_CHOICES.OTHER)
+    # Référence unique fournie par le fournisseur
     reference = models.CharField(max_length=100)
+    # Montant total de la facture
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    # Date d'émission
     issue_date = models.DateField()
+    # Date d'échéance (si fournie)
     due_date = models.DateField(blank=True, null=True)
+    # Statut de la facture (en attente ou payée)
     status = models.CharField(max_length=20, choices=InvoiceStatusChoices.choices, default=InvoiceStatusChoices.PENDING)
+    # Description ou notes supplémentaires
     description = models.TextField(blank=True, null=True)
+    # Horodatage de la création de l'enregistrement
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

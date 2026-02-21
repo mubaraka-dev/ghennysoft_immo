@@ -7,8 +7,8 @@ class UserAdmin(UserAdmin):
     list_filter = ['is_staff', 'is_active']
     search_fields = ['username', 'email', 'first_name', 'last_name']
     ordering = ['username'] 
-    fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('phone_number', 'adress')}),
-    )
+    # fieldsets = UserAdmin.fieldsets + (
+    #     (None, {'fields': ( 'adress')}),
+    # )
 
 admin.site.register(User, UserAdmin)

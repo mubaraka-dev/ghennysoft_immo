@@ -39,13 +39,23 @@ class RentViewSet(viewsets.ModelViewSet):
     Permet de lister, créer, voir les détails, mettre à jour et supprimer les loyers.
     Inclut une action pour générer les loyers mensuels en masse.
     """
-    queryset = Rent.objects.all()
+    queryset = Rent.objects.none()
     serializer_class = RentSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['contract__tenant__first_name', 'contract__apartment__number']
     filterset_fields = ['status', 'contract']
 
+    def get_queryset(self):
+            """
+            Retourne uniquement les loyers liés à des contrats où l'utilisateur
+            connecté est soit le propriétaire (`contract.owner`), soit le locataire
+            (`contract.tenant`).
+            """
+            user = self.request.user
+            if getattr(self, 'swagger_fake_view', False):
+                return Rent.objects.none()
+            return Rent.objects.filter(Q(contract__owner=user) | Q(contract__tenant=user))
     @extend_schema(
         summary="Générer les loyers mensuels",
         description="Génère automatiquement les loyers pour tous les contrats actifs pour une année et un mois donnés.",
@@ -269,6 +279,8 @@ class ContractViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         raise MethodNotAllowed('PATCH')
+
+    exclude_methods = ['destroy', 'update', 'partial_update']
 
 
 
